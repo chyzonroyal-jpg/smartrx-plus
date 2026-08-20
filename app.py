@@ -1,160 +1,299 @@
 import streamlit as st
 
-# 1. DATABASE COMPONENT SETS
+# ==========================================================
+# PAGE CONFIG
+# ==========================================================
+st.set_page_config(
+    page_title="SmartRx Plus",
+    page_icon="💊",
+    layout="centered"
+)
+
+# ==========================================================
+# CUSTOM THEME
+# ==========================================================
+st.markdown("""
+<style>
+.stApp{
+    background-color:#F3F9FF;
+}
+h1,h2,h3{
+    color:#4338CA;
+}
+.section{
+    background:#EAF4FF;
+    padding:18px;
+    border-radius:12px;
+    border-left:6px solid #4338CA;
+    margin-bottom:18px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ==========================================================
+# ORTHODOX MEDICINE DATABASE
+# ==========================================================
 DRUG_DATABASE = {
-    "Emzor Paracetamol": "Analgesics",
-    "Panadol": "Analgesics",
-    "Boska": "Analgesics",
-    "Calpol": "Analgesics",
-    "Efferalgan": "Analgesics",
-    "M&B Paracetamol": "Analgesics",
-    "Amatem": "Antimalarials",
-    "Coartem": "Antimalarials",
-    "Lonart": "Antimalarials",
-    "P-Alaxin": "Antimalarials",
-    "Maldox": "Antimalarials",
-    "Brufen (Ibuprofen)": "NSAIDs",
-    "Nurofen": "NSAIDs",
-    "Diclofenac": "NSAIDs",
-    "Voltaren": "NSAIDs",
-    "Aspirin": "NSAIDs",
-    "Ampiclox": "Antibiotics",
-    "Amoxicillin": "Antibiotics",
-    "Augmentin": "Antibiotics",
-    "Ciprofloxacin": "Antibiotics",
-    "Doxycycline": "Antibiotics",
-    "Tetracycline": "Antibiotics",
-    "Septrin": "Antibiotics",
-    "Flagyl": "Antiprotozoals",
-    "Metrogyl": "Antiprotozoals",
-    "Actifed": "Cold & Antihistamines",
-    "Mixagrip": "Cold & Antihistamines",
-    "Procold": "Cold & Antihistamines",
-    "Piriton": "Cold & Antihistamines"
+
+    # Analgesics
+    "Boska":"Analgesics",
+    "Calpol":"Analgesics",
+    "Efferalgan":"Analgesics",
+    "Emzor Paracetamol":"Analgesics",
+    "M&B Paracetamol":"Analgesics",
+    "Panadol":"Analgesics",
+
+    # Antimalarials
+    "Amatem":"Antimalarials",
+    "Coartem":"Antimalarials",
+    "Lonart":"Antimalarials",
+    "P-Alaxin":"Antimalarials",
+    "Maldox":"Antimalarials",
+
+    # NSAIDs
+    "Aspirin":"NSAIDs",
+    "Brufen":"NSAIDs",
+    "Diclofenac":"NSAIDs",
+    "Ibuprofen":"NSAIDs",
+    "Naproxen":"NSAIDs",
+    "Nurofen":"NSAIDs",
+    "Ponstan":"NSAIDs",
+    "Voltaren":"NSAIDs",
+
+    # Antibiotics
+    "Amoxicillin":"Antibiotics",
+    "Ampiclox":"Antibiotics",
+    "Augmentin":"Antibiotics",
+    "Azithromycin":"Antibiotics",
+    "Ciprofloxacin":"Antibiotics",
+    "Doxycycline":"Antibiotics",
+    "Septrin":"Antibiotics",
+    "Tetracycline":"Antibiotics",
+
+    # Antiprotozoals
+    "Flagyl":"Antiprotozoals",
+    "Metrogyl":"Antiprotozoals",
+
+    # Cold & Flu
+    "Actifed":"Cold & Flu",
+    "Cetirizine":"Cold & Flu",
+    "Loratadine":"Cold & Flu",
+    "Mixagrip":"Cold & Flu",
+    "Piriton":"Cold & Flu",
+    "Procold":"Cold & Flu",
+
+    # Gut Health
+    "Andrews Liver Salt":"Gut Health",
+    "Esomeprazole":"Gut Health",
+    "Gaviscon":"Gut Health",
+    "Omeprazole":"Gut Health"
 }
 
+# ==========================================================
+# NIGERIAN HERBAL DATABASE
+# ==========================================================
 HERB_DATABASE = {
-    "Dogonyaro (Neem Tree)": {
-        "scientific": "Azadirachta indica",
-        "conflicting_classes": ["Analgesics", "Antimalarials"],
-        "risk": "🚨 CRITICAL LIVER STRESS: Dogonyaro crude properties drastically multiply organ processing workloads when combined with Paracetamol or Antimalarials. Risk of acute hepatotoxicity."
-    },
-    "Ewuro (Bitter Leaf)": {
-        "scientific": "Vernonia amygdalina",
-        "conflicting_classes": ["Antibiotics"],
-        "risk": "⚠️ ABSORPTION INTERFERENCE: Bitter Leaf properties alter stomach acidity parameters, dropping blood assimilation rates and blocking the effectiveness of synthetic antibiotics."
-    },
-    "Efinrin (Scent Leaf)": {
-        "scientific": "Ocimum gratissimum",
-        "conflicting_classes": ["Antiprotozoals"],
-        "risk": "CRITICAL TOXICITY: Mixing concentrated Scent Leaf infusions with Metronidazole (Flagyl) triggers extreme gastrointestinal contractions and acute vomiting."
-    }
+
+    "Dogonyaro": {"english":"Neem","scientific":"Azadirachta indica","yoruba":"Dogonyaro","hausa":"Dogonyaro","igbo":"Akoko","classes":["Analgesics","Antimalarials"],"risk":"CRITICAL LIVER STRESS"},
+
+    "Ewe-Awo": {"english":"Sweet Wormwood","scientific":"Artemisia annua","yoruba":"Ewe-Awo","hausa":"Tazargade","igbo":"Agbara","classes":["Antimalarials"],"risk":"CARDIOTOXICITY RISK"},
+
+    "Ileke": {"english":"Madagascar Periwinkle","scientific":"Catharanthus roseus","yoruba":"Ileke","hausa":"Periwinkle","igbo":"Agbara","classes":["Antimalarials"],"risk":"NEUROLOGICAL RISK"},
+
+    "Atale": {"english":"Ginger","scientific":"Zingiber officinale","yoruba":"Atale","hausa":"Citta","igbo":"Jinja","classes":["NSAIDs"],"risk":"GASTRIC BLEEDING"},
+
+    "Ata-Iru": {"english":"African Pepper Bark","scientific":"Xylopia aethiopica","yoruba":"Ata-Iru","hausa":"Kimba","igbo":"Uda","classes":["NSAIDs"],"risk":"GASTRIC BLEEDING"},
+
+    "Ewuro": {"english":"Bitter Leaf","scientific":"Vernonia amygdalina","yoruba":"Ewuro","hausa":"Shuwaka","igbo":"Olugbu","classes":["Antibiotics"],"risk":"ABSORPTION INTERFERENCE"},
+
+    "Aayu": {"english":"Garlic","scientific":"Allium sativum","yoruba":"Aayu","hausa":"Tafarnuwa","igbo":"Ayuu","classes":["Antibiotics"],"risk":"ABSORPTION INTERFERENCE"},
+
+    "Efinrin": {"english":"Scent Leaf","scientific":"Ocimum gratissimum","yoruba":"Efinrin","hausa":"Daddoya","igbo":"Nchanwu","classes":["Antiprotozoals"],"risk":"SEVERE GI TOXICITY"},
+
+    "Atare": {"english":"Alligator Pepper","scientific":"Aframomum melegueta","yoruba":"Atare","hausa":"Citta Gida","igbo":"Ose Oji","classes":["Cold & Flu"],"risk":"HYPERTENSION RISK"},
+
+    "Ahon Erin": {"english":"Aloe Vera","scientific":"Aloe vera","yoruba":"Ahon Erin","hausa":"Suku","igbo":"Efe Inyanya","classes":["Gut Health"],"risk":"ELECTROLYTE IMBALANCE"},
+
+    "Zogale": {"english":"Moringa","scientific":"Moringa oleifera","yoruba":"Ewe Igbale","hausa":"Zogale","igbo":"Okwe Oyibo","classes":[],"risk":"Under AI Review"},
+
+    "Atale Pupa": {"english":"Turmeric","scientific":"Curcuma longa","yoruba":"Atale Pupa","hausa":"Kurkum","igbo":"Turmeric","classes":[],"risk":"Under AI Review"},
+
+    "Ewe Gova": {"english":"Guava Leaf","scientific":"Psidium guajava","yoruba":"Ewe Gova","hausa":"Goba","igbo":"Akwukwo Gova","classes":[],"risk":"Under AI Review"},
+
+    "Kooko Oba": {"english":"Lemongrass","scientific":"Cymbopogon citratus","yoruba":"Kooko Oba","hausa":"Tsamiya","igbo":"Achara Lemon","classes":[],"risk":"Under AI Review"},
+
+    "Zobo": {"english":"Hibiscus","scientific":"Hibiscus sabdariffa","yoruba":"Zobo","hausa":"Yakwua","igbo":"Zobo","classes":[],"risk":"Under AI Review"},
+
+    "Uziza": {"english":"West African Pepper","scientific":"Piper guineense","yoruba":"Iyere","hausa":"Masoro","igbo":"Uziza","classes":[],"risk":"Under AI Review"},
+
+    "Utazi": {"english":"Utazi","scientific":"Gongronema latifolium","yoruba":"Arokeke","hausa":"Utazi","igbo":"Utazi","classes":[],"risk":"Under AI Review"},
+
+    "Orogbo": {"english":"Bitter Kola","scientific":"Garcinia kola","yoruba":"Orogbo","hausa":"Namijin Goro","igbo":"Aki Ilu","classes":[],"risk":"Under AI Review"},
+
+    "Kanafuru": {"english":"Clove","scientific":"Syzygium aromaticum","yoruba":"Kanafuru","hausa":"Kanumfari","igbo":"Kanafuru","classes":[],"risk":"Under AI Review"},
+
+    "Na'ana": {"english":"Mint","scientific":"Mentha spicata","yoruba":"Mint","hausa":"Na'ana","igbo":"Mint","classes":[],"risk":"Under AI Review"},
+
+    "Efirin": {"english":"African Basil","scientific":"Ocimum basilicum","yoruba":"Efirin","hausa":"Basil","igbo":"Nchanwu","classes":[],"risk":"Under AI Review"},
+
+    "Ewe Ibepe": {"english":"Pawpaw Leaf","scientific":"Carica papaya","yoruba":"Ewe Ibepe","hausa":"Ganyen Gwanda","igbo":"Akwukwo Okwuru","classes":[],"risk":"Under AI Review"},
+
+    "Thyme": {"english":"Thyme","scientific":"Thymus vulgaris","yoruba":"Thyme","hausa":"Thyme","igbo":"Thyme","classes":[],"risk":"Under AI Review"},
+
+    "Agbo Jedi": {"english":"Traditional Polyherbal Decoction","scientific":"Polyherbal formulation","yoruba":"Agbo Jedi","hausa":"Maganin Gargajiya","igbo":"Agbo","classes":[],"risk":"Composition varies – Use with caution"}
 }
 
-# 2. DESIGN & INTERFACE WRAPPERS
-st.set_page_config(page_title="SmartRx Plus Engine", page_icon="🇳🇬", layout="centered")
+# ==========================================================
+# SIDEBAR NAVIGATION
+# ==========================================================
+page = st.sidebar.radio(
+    "Navigation",
+    ["🏠 Home","📖 How to Use","ℹ️ About"]
+)
 
-# Reusable Function to render boxes with indigo title text color and light blue background color
-def render_styled_box(title, content):
-    st.markdown(
-        f"""
-        <div style="background-color: #EBF3F9; padding: 18px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #4B0082;">
-            <h4 style="color: #4B0082; margin-top: 0px; font-weight: bold; font-family: sans-serif;">{title}</h4>
-            <div style="color: #2F4F4F; font-family: sans-serif; font-size: 15px; line-height: 1.5;">{content}</div>
-        </div>
-        """, 
-        unsafe_html=True
+# ==========================================================
+# HOME
+# ==========================================================
+if page == "🏠 Home":
+
+    st.title("💊 SmartRx Plus")
+    st.caption("AI Polypharmacy & Traditional Herbal Safety Platform")
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("About SmartRx Plus")
+    st.write("SmartRx Plus cross-references orthodox medicines with Traditional African medicinal herbs to identify potential herb–drug interactions and medication safety risks.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("1. Select Orthodox Medicine")
+    st.caption("Choose one medicine from the dropdown.")
+    selected_drug = st.selectbox(
+        "Orthodox Medicine",
+        ["-- Select Medicine --"] + sorted(DRUG_DATABASE.keys())
     )
+    st.markdown("</div>", unsafe_allow_html=True)
 
-st.title("SmartRx Plus — Polypharmacy & Herb Safety Engine 🇳🇬")
-st.caption("Engineered by Chizix Orbit Digital Innovations LTD (CODIL)")
-st.write("---")
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("2. Select Up to Four Local Herbs")
+    st.caption("Choose every herbal infusion or extract currently being used.")
 
-# 3. INTERACTIVE LAYOUT STRATEGY (Sidebar Tabs)
-menu_selection = st.sidebar.radio("Navigation Menu", ["Safety Screening Dashboard", "How to Use Guide", "About SmartRx Plus"])
+   # Create dropdown labels with Local + English + Scientific names
+herb_labels = {
+    herb: f"{herb} ({info['english']}) — {info['scientific']}"
+    for herb, info in HERB_DATABASE.items()
+}
 
-# TAB PANEL 1: HOW TO USE GUIDE
-if menu_selection == "How to Use Guide":
-    guide_content = """
-    Follow these straightforward steps to run a multi-layered medicine safety check:
-    <br><br>
-    <b>Step 1: Select Your Full Pill List</b><br>
-    Click the selector field under the orthodox drugs section. Scroll or search to tap on your medications. You can select multiple separate brands at the same time to screen for active group duplication.
-    <br><br>
-    <b>Step 2: Choose Your Traditional Herbal Extracts</b><br>
-    Click the dropdown panel under the traditional section. Select all local remedies or organic mixtures you are currently drinking or consuming alongside your pills.
-    <br><br>
-    <b>Step 3: Run Interactive Diagnostic Screening</b><br>
-    Click the full-width screening control button at the base of the portal. The matrix will cross-check synthetic ingredient duplications and traditional bio-chemical contradictions instantly.
-    """
-    render_styled_box("Step-by-Step User Instructions", guide_content)
+display_options = ["None"] + sorted(herb_labels.values())
 
-# TAB PANEL 2: ABOUT THE SOLUTION
-elif menu_selection == "About SmartRx Plus":
-    about_content = """
-    <b>SmartRx Plus</b> is an AI-powered medication safety middleware engine developed directly by <b>Chizix Orbit Digital Innovations LTD (CODIL)</b>. 
-    <br><br>
-    In developing markets like Nigeria, a massive public health blindspot exists due to concurrent dual-medication—where citizens mix modern synthetic prescriptions with traditional African medicinal herbs without standard dosage calculations or compound labeling. 
-    <br><br>
-    Our platform acts as a digital companion that standardizes colloquial dialect variants into universal chemical identifiers. By leveraging advanced logical architectures and Meta's open-source artificial intelligence systems, we bridge traditional practices with clinical safety datasets to protect millions of consumers from preventable organ toxicities.
-    """
-    render_styled_box("Corporate Solution Overview", about_content)
+reverse_lookup = {v: k for k, v in herb_labels.items()}
 
-# TAB PANEL 3: THE MAIN SCREENING WORKSPACE
-else:
-    # Segment 1 UI Container
-    drugs_instruction = "💡 <b>Pro Tip:</b> Click this selector multiple times to select every separate brand pill you are scheduled to take concurrently."
-    render_styled_box("1. Select All Current Orthodox Medications", drugs_instruction)
-    selected_drugs = st.multiselect(
-        "Choose synthetic prescriptions or over-the-counter brands:",
-        options=sorted(list(DRUG_DATABASE.keys())),
-        label_visibility="collapsed"
-    )
-    
-    st.write("") # Layout spacer
-    
-    # Segment 2 UI Container
-    herbs_instruction = "🌿 <b>Dropdown Unlocked:</b> You can now choose multiple traditional local herb infusions from this menu to run comparative cross-domain analysis."
-    render_styled_box("2. Select All Current Indigenous Herb Infusions", herbs_instruction)
-    selected_herbs = st.multiselect(
-        "Choose traditional local remedies or native extracts:",
-        options=sorted(list(HERB_DATABASE.keys())),
-        label_visibility="collapsed"
-    )
+herb1 = st.selectbox("Herb 1", display_options)
+herb2 = st.selectbox("Herb 2", display_options, key="h2")
+herb3 = st.selectbox("Herb 3", display_options, key="h3")
+herb4 = st.selectbox("Herb 4", display_options, key="h4")
 
-    st.write("---")
+selected_herbs = []
 
-    # 4. DATA LOGIC PROCESSOR
-    if st.button("RUN ADVANCED CROSS-DOMAIN SAFETY SCREENING", use_container_width=True):
-        if not selected_drugs and not selected_herbs:
-            st.info("Please fill out your medication panels above to execute the diagnostic screening check.")
+for item in [herb1, herb2, herb3, herb4]:
+    if item != "None":
+        selected_herbs.append(reverse_lookup[item])
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    if st.button("🧠 RUN AI SAFETY VERIFICATION"):
+
+        if selected_drug == "-- Select Medicine --":
+            st.warning("Please select an orthodox medicine.")
+
+        elif len(selected_herbs) == 0:
+            st.warning("Please select at least one herb.")
+
         else:
-            st.write("### 🔍 Advanced Screening Diagnostics")
-            conflicts_found = False
-            
-            # CHECK LEVEL 1: Synthetic Overdoses (Multi-Drug Duplication)
-            if selected_drugs:
-                selected_classes = [DRUG_DATABASE[drug] for drug in selected_drugs]
-                duplicate_classes = set([cls for cls in selected_classes if selected_classes.count(cls) > 1])
-                
-                if duplicate_classes:
-                    conflicts_found = True
-                    for cls in duplicate_classes:
-                        st.error(f"❌ **Orthodox Duplication Detected**: You have chosen multiple brands belonging to the **{cls}** class simultaneously. This introduces an accidental synthetic drug overdose risk.")
 
-            # CHECK LEVEL 2: Multi-Herb to Multi-Drug Interactions
-            if selected_herbs and selected_drugs:
-                for herb_name in selected_herbs:
-                    herb_info = HERB_DATABASE[herb_name]
-                    
-                    for drug_name in selected_drugs:
-                        drug_class = DRUG_DATABASE[drug_name]
-                        
-                        if drug_class in herb_info["conflicting_classes"]:
-                            conflicts_found = True
-                            st.error(f"❌ **Cross-Domain Interaction Warning**: The extract **{herb_name}** conflicts directly with your medication: **{drug_name}** ({drug_class}).")
-                            st.warning(herb_info["risk"])
-            
-            # CLEAN VERDICT PASS
-            if not conflicts_found:
-                st.success("✅ **Clear Safety Profile**: No active ingredient duplications or direct drug-herb class contradictions flagged for this intake profile.")
+            st.markdown('<div class="section">', unsafe_allow_html=True)
+            st.subheader("AI Clinical Screening Report")
+
+            drug_class = DRUG_DATABASE[selected_drug]
+            interaction_found = False
+
+            for herb in selected_herbs:
+
+                info = HERB_DATABASE[herb]
+
+st.error("🚨 HIGH-RISK HERB–DRUG INTERACTION")
+
+st.write(f"**Orthodox Medicine:** {selected_drug}")
+st.write(f"**Drug Class:** {drug_class}")
+
+st.write(f"**Local Name:** {herb}")
+st.write(f"**English Name:** {info['english']}")
+st.write(f"**Scientific Name:** *{info['scientific']}*")
+st.write(f"**Yoruba:** {info['yoruba']}")
+st.write(f"**Hausa:** {info['hausa']}")
+st.write(f"**Igbo:** {info['igbo']}")
+st.write(f"**Risk Level:** {info['risk']}")
+
+                    st.divider()
+
+            if not interaction_found:
+                st.success("✅ CLEAR SAFETY PROFILE")
+                st.write("No validated high-risk herb–drug interaction was detected within the current SmartRx Plus knowledge base.")
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+# ==========================================================
+# HOW TO USE
+# ==========================================================
+elif page == "📖 How to Use":
+
+    st.title("📖 How to Use SmartRx Plus")
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("Step 1")
+    st.write("Select one orthodox medicine from the pharmaceutical database.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("Step 2")
+    st.write("Choose up to four Nigerian medicinal herbs currently being used.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("Step 3")
+    st.write("Click **RUN AI SAFETY VERIFICATION** to analyze the selected combination.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("Step 4")
+    st.write("Review the AI clinical report. Red indicates a validated high-risk interaction, while green indicates no known interaction in the current knowledge base.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ==========================================================
+# ABOUT
+# ==========================================================
+else:
+
+    st.title("ℹ️ About SmartRx Plus")
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("Corporate Solution Overview")
+
+    st.write("""
+    **SmartRx Plus** is an AI-powered clinical decision-support platform developed by **Chizix Orbit Digital Innovations Ltd.**
+
+    The platform combines pharmaceutical intelligence with Traditional African Medicine (TAM) through an ethnobotanical knowledge base to identify potential herb–drug interactions, duplicate therapeutic mechanisms, and medication safety risks.
+    """)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown('<div class="section">', unsafe_allow_html=True)
+    st.subheader("AI Knowledge Base")
+
+    st.write("• 40+ Nigerian orthodox medicine brands")
+    st.write("• 24 indigenous medicinal herbs")
+    st.write("• English, Yoruba, Hausa & Igbo herb identification")
+    st.write("• AI clinical interaction reporting")
+    st.write("• Polypharmacy safety screening")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.info("SmartRx Plus is an educational clinical decision-support platform and does not replace professional medical advice.")
