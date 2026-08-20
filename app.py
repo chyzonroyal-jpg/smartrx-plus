@@ -204,7 +204,7 @@ for item in [herb1, herb2, herb3, herb4]:
         if selected_drug == "-- Select Medicine --":
             st.warning("Please select an orthodox medicine.")
 
-        elif len(selected_herbs) == 0:
+               elif len(selected_herbs) == 0:
             st.warning("Please select at least one herb.")
 
         else:
@@ -219,24 +219,29 @@ for item in [herb1, herb2, herb3, herb4]:
 
                 info = HERB_DATABASE[herb]
 
-st.error("🚨 HIGH-RISK HERB–DRUG INTERACTION")
+                if drug_class in info["classes"]:
 
-st.write(f"**Orthodox Medicine:** {selected_drug}")
-st.write(f"**Drug Class:** {drug_class}")
+                    interaction_found = True
 
-st.write(f"**Local Name:** {herb}")
-st.write(f"**English Name:** {info['english']}")
-st.write(f"**Scientific Name:** *{info['scientific']}*")
-st.write(f"**Yoruba:** {info['yoruba']}")
-st.write(f"**Hausa:** {info['hausa']}")
-st.write(f"**Igbo:** {info['igbo']}")
-st.write(f"**Risk Level:** {info['risk']}")
+                    st.error("🚨 HIGH-RISK HERB–DRUG INTERACTION")
+
+                    st.write(f"**Orthodox Medicine:** {selected_drug}")
+                    st.write(f"**Drug Class:** {drug_class}")
+                    st.write(f"**Local Name:** {herb}")
+                    st.write(f"**English Name:** {info['english']}")
+                    st.write(f"**Scientific Name:** {info['scientific']}")
+                    st.write(f"**Yoruba:** {info['yoruba']}")
+                    st.write(f"**Hausa:** {info['hausa']}")
+                    st.write(f"**Igbo:** {info['igbo']}")
+                    st.write(f"**Risk Level:** {info['risk']}")
 
                     st.divider()
 
             if not interaction_found:
                 st.success("✅ CLEAR SAFETY PROFILE")
-                st.write("No validated high-risk herb–drug interaction was detected within the current SmartRx Plus knowledge base.")
+                st.write(
+                    "No validated high-risk herb–drug interaction was detected within the current SmartRx Plus knowledge base."
+                )
 
             st.markdown("</div>", unsafe_allow_html=True)
 
