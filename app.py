@@ -251,7 +251,6 @@ for item in [herb1, herb2, herb3, herb4]:
 elif page == "📖 How to Use":
 
     st.title("📖 How to Use SmartRx Plus")
-
     st.markdown('<div class="section">', unsafe_allow_html=True)
     st.subheader("Step 1")
     st.write("Select one orthodox medicine from the pharmaceutical database.")
