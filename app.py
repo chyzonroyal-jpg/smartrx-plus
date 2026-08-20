@@ -6,53 +6,93 @@ import streamlit as st
 st.set_page_config(
     page_title="SmartRx Plus",
     page_icon="💊",
-    layout="centered"
+    layout="wide"
 )
 
 # ==========================================================
-# CUSTOM THEME
+# CUSTOM STYLING
+# SmartRx NG colour system retained
+# Only the main title/heading area uses Indigo
 # ==========================================================
 st.markdown("""
 <style>
 
 .stApp {
-    background-color: #F3F9FF;
+    background: #FAFBFC;
 }
 
-h1, h2, h3 {
-    color: #4338CA;
+#MainMenu {
+    visibility: hidden;
 }
 
-.section {
-    background-color: #EAF4FF;
-    padding: 20px;
-    border-radius: 14px;
-    border-left: 6px solid #4338CA;
+footer {
+    visibility: hidden;
+}
+
+/* SmartRx Plus Hero */
+.hero {
+    background: linear-gradient(
+        135deg,
+        #4338CA,
+        #6366F1
+    );
+    color: white;
+    padding: 35px;
+    border-radius: 20px;
+    border-left: 10px solid #F9CC48;
     margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.20);
+    backdrop-filter: blur(12px);
 }
 
-.section-title {
+.card {
+    background: #FFFFFF;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(20,70,124,0.10);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+}
+
+.safe {
+    background-color: #D1FAE5;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 8px solid green;
+    margin-bottom: 15px;
+}
+
+.warning {
+    background-color: #FEF3C7;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 8px solid orange;
+    margin-bottom: 15px;
+}
+
+.danger {
+    background-color: #FEE2E2;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 8px solid red;
+    margin-bottom: 15px;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: #444;
+    margin-top: 30px;
+}
+
+h1, h2, h3, h4 {
     color: #4338CA;
-    font-weight: 700;
-    font-size: 1.15rem;
-}
-
-div.stButton > button {
-    background-color: #4338CA;
-    color: white;
-    border-radius: 10px;
-    border: none;
-    padding: 10px 18px;
-    font-weight: 600;
-}
-
-div.stButton > button:hover {
-    background-color: #3730A3;
-    color: white;
 }
 
 </style>
 """, unsafe_allow_html=True)
+
 
 # ==========================================================
 # ORTHODOX MEDICINE DATABASE
@@ -113,8 +153,9 @@ DRUG_DATABASE = {
     "Omeprazole": "Gut Health"
 }
 
+
 # ==========================================================
-# NIGERIAN HERBAL DATABASE
+# NIGERIAN / TRADITIONAL HERBAL DATABASE
 # ==========================================================
 HERB_DATABASE = {
 
@@ -125,7 +166,7 @@ HERB_DATABASE = {
         "hausa": "Dogonyaro",
         "igbo": "Akoko",
         "classes": ["Analgesics", "Antimalarials"],
-        "risk": "High-priority screening flag: potential hepatic and pharmacological concerns require professional review."
+        "risk": "Potential liver-safety concern when concentrated or excessive herbal preparations are combined with medicines that can also affect the liver."
     },
 
     "Ewe-Awo": {
@@ -135,7 +176,7 @@ HERB_DATABASE = {
         "hausa": "Tazargade",
         "igbo": "Agbara",
         "classes": ["Antimalarials"],
-        "risk": "Screening flag: contains artemisinin-related compounds. Concurrent use with antimalarial medicines requires professional review."
+        "risk": "Potential concern because Artemisia annua contains artemisinin-related compounds and unstandardized herbal preparations may have unpredictable concentrations."
     },
 
     "Ileke": {
@@ -145,7 +186,7 @@ HERB_DATABASE = {
         "hausa": "Periwinkle",
         "igbo": "Agbara",
         "classes": ["Antimalarials"],
-        "risk": "Screening flag: medicinally active alkaloids are present. Unsupervised medicinal use may present safety concerns."
+        "risk": "This plant contains potent alkaloids and should not be treated as an ordinary herbal drink. Potential toxicity and medicine interaction concerns require professional guidance."
     },
 
     "Atale": {
@@ -155,7 +196,7 @@ HERB_DATABASE = {
         "hausa": "Citta",
         "igbo": "Jinja",
         "classes": ["NSAIDs"],
-        "risk": "Screening flag: concentrated ginger preparations may have effects relevant to bleeding risk and gastrointestinal safety."
+        "risk": "Potential additive effects on bleeding risk may require caution when concentrated preparations are combined with medicines that affect platelet function or bleeding."
     },
 
     "Ata-Iru": {
@@ -165,7 +206,7 @@ HERB_DATABASE = {
         "hausa": "Kimba",
         "igbo": "Uda",
         "classes": ["NSAIDs"],
-        "risk": "Screening flag: concentrated preparations may have pharmacological effects requiring professional assessment."
+        "risk": "Traditional preparations may have pharmacological effects that warrant caution when combined with medicines affecting pain, inflammation or bleeding."
     },
 
     "Ewuro": {
@@ -175,7 +216,7 @@ HERB_DATABASE = {
         "hausa": "Shuwaka",
         "igbo": "Olugbu",
         "classes": ["Antibiotics"],
-        "risk": "Screening flag: medicinal preparations may contain bioactive compounds that could affect medicine response."
+        "risk": "Potential herb–medicine interaction requires caution because the composition and concentration of traditional preparations can vary considerably."
     },
 
     "Aayu": {
@@ -185,7 +226,7 @@ HERB_DATABASE = {
         "hausa": "Tafarnuwa",
         "igbo": "Ayuu",
         "classes": ["Antibiotics"],
-        "risk": "Screening flag: concentrated garlic preparations can have pharmacological effects and should be reviewed when medicines are involved."
+        "risk": "Garlic may influence drug metabolism and platelet function. Concentrated preparations may therefore warrant professional review alongside medicines."
     },
 
     "Efinrin": {
@@ -195,7 +236,7 @@ HERB_DATABASE = {
         "hausa": "Daddoya",
         "igbo": "Nchanwu",
         "classes": ["Antiprotozoals"],
-        "risk": "Screening flag: concentrated preparations contain bioactive compounds that may require interaction assessment."
+        "risk": "Potential interaction concern with medicines such as metronidazole; concentrated herbal preparations should be reviewed by a healthcare professional."
     },
 
     "Atare": {
@@ -205,7 +246,7 @@ HERB_DATABASE = {
         "hausa": "Citta Gida",
         "igbo": "Ose Oji",
         "classes": ["Cold & Flu"],
-        "risk": "Screening flag: stimulant and cardiovascular effects should be considered when combined with medicines."
+        "risk": "May have stimulant and cardiovascular effects. Caution is appropriate when used with medicines that can influence blood pressure or heart rate."
     },
 
     "Ahon Erin": {
@@ -215,7 +256,7 @@ HERB_DATABASE = {
         "hausa": "Suku",
         "igbo": "Efe Inyanya",
         "classes": ["Gut Health"],
-        "risk": "Screening flag: oral aloe preparations may affect gastrointestinal function and electrolyte balance."
+        "risk": "Oral aloe preparations may have laxative effects and can affect fluid and electrolyte balance."
     },
 
     "Zogale": {
@@ -225,7 +266,7 @@ HERB_DATABASE = {
         "hausa": "Zogale",
         "igbo": "Okwe Oyibo",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database. Professional review is recommended."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Atale Pupa": {
@@ -235,7 +276,7 @@ HERB_DATABASE = {
         "hausa": "Kurkum",
         "igbo": "Turmeric",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database. Concentrated supplements should still be reviewed."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Ewe Gova": {
@@ -245,7 +286,7 @@ HERB_DATABASE = {
         "hausa": "Goba",
         "igbo": "Akwukwo Gova",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database. Professional review is recommended."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Kooko Oba": {
@@ -255,7 +296,7 @@ HERB_DATABASE = {
         "hausa": "Tsamiya",
         "igbo": "Achara Lemon",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Zobo": {
@@ -265,7 +306,7 @@ HERB_DATABASE = {
         "hausa": "Yakwua",
         "igbo": "Zobo",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database. Effects on blood pressure and medicines may warrant professional review."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Uziza": {
@@ -275,7 +316,7 @@ HERB_DATABASE = {
         "hausa": "Masoro",
         "igbo": "Uziza",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Utazi": {
@@ -285,7 +326,7 @@ HERB_DATABASE = {
         "hausa": "Utazi",
         "igbo": "Utazi",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Orogbo": {
@@ -295,7 +336,7 @@ HERB_DATABASE = {
         "hausa": "Namijin Goro",
         "igbo": "Aki Ilu",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Kanafuru": {
@@ -305,7 +346,7 @@ HERB_DATABASE = {
         "hausa": "Kanumfari",
         "igbo": "Kanafuru",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Na'ana": {
@@ -315,7 +356,7 @@ HERB_DATABASE = {
         "hausa": "Na'ana",
         "igbo": "Mint",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Efirin": {
@@ -325,7 +366,7 @@ HERB_DATABASE = {
         "hausa": "Basil",
         "igbo": "Nchanwu",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Ewe Ibepe": {
@@ -335,7 +376,7 @@ HERB_DATABASE = {
         "hausa": "Ganyen Gwanda",
         "igbo": "Akwukwo Okwuru",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Thyme": {
@@ -345,7 +386,7 @@ HERB_DATABASE = {
         "hausa": "Thyme",
         "igbo": "Thyme",
         "classes": [],
-        "risk": "No specific interaction is asserted by this screening database."
+        "risk": "No specific class match is currently configured in the SmartRx Plus knowledge base. Interaction status requires further evidence review."
     },
 
     "Agbo Jedi": {
@@ -355,381 +396,194 @@ HERB_DATABASE = {
         "hausa": "Maganin Gargajiya",
         "igbo": "Agbo",
         "classes": [],
-        "risk": "Composition varies between preparations. Because the ingredients and concentrations may be unknown, professional review is recommended."
+        "risk": "Composition varies between preparations. Because the ingredients and concentrations may be unknown, professional advice is recommended before combining with medicines."
     }
 }
+
+
+# ==========================================================
+# HELPER FUNCTIONS
+# ==========================================================
+def render_footer():
+    st.markdown(
+        """
+        <div class="footer">
+            <strong>SmartRx Plus</strong><br>
+            © 2026 Chizix Orbit Digital Innovations Ltd.
+            All Rights Reserved.<br>
+            Promoting safer medication decisions through digital
+            health intelligence 🇳🇬
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def herb_display_label(herb_name):
+    info = HERB_DATABASE[herb_name]
+
+    return (
+        f"{herb_name} ({info['english']}) — "
+        f"{info['scientific']}"
+    )
+
 
 # ==========================================================
 # SIDEBAR NAVIGATION
 # ==========================================================
+st.sidebar.title("💊 SmartRx Plus")
+
 page = st.sidebar.radio(
     "Navigation",
-    ["🏠 Home", "📖 How to Use", "ℹ️ About"]
+    [
+        "🏠 Home",
+        "ℹ️ About",
+        "📘 How To Use",
+        "🔍 Verify Your Medicines"
+    ]
 )
 
+
 # ==========================================================
-# HOME
+# HOME PAGE
 # ==========================================================
 if page == "🏠 Home":
 
-    st.title("💊 SmartRx Plus")
-    st.caption("AI Polypharmacy & Traditional Herbal Safety Platform")
+    st.markdown(
+        """
+        <div class="hero">
 
-    st.markdown('<div class="section">', unsafe_allow_html=True)
+        <h1 style="color:white;">💊 SmartRx Plus</h1>
 
-    st.subheader("About SmartRx Plus")
+        <h3 style="color:white;">
+        Medication Safety & Traditional Medicine Intelligence
+        </h3>
 
-    st.write(
-        "SmartRx Plus cross-references selected orthodox medicines with "
-        "Traditional African Medicine (TAM) entries in its knowledge base "
-        "to screen for potential herb–drug safety concerns."
+        <p>
+        SmartRx Plus is an emerging Nigerian digital health
+        platform designed to help users screen combinations
+        of orthodox medicines and traditional herbal
+        preparations for potential safety concerns.
+        </p>
+
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    st.info(
-        "This is a safety-screening and educational tool. It does not "
-        "diagnose illness or replace a doctor or pharmacist."
-    )
+    col1, col2, col3 = st.columns(3)
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # ------------------------------------------------------
-    # ORTHODOX MEDICINE
-    # ------------------------------------------------------
-    st.markdown('<div class="section">', unsafe_allow_html=True)
-
-    st.subheader("1. Select Orthodox Medicine")
-
-    st.caption(
-        "Select one orthodox medicine. SmartRx Plus currently screens "
-        "one selected medicine against up to four selected herbs."
-    )
-
-    selected_drug = st.selectbox(
-        "Orthodox Medicine",
-        ["-- Select Medicine --"] + sorted(DRUG_DATABASE.keys())
-    )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # ------------------------------------------------------
-    # HERBS
-    # ------------------------------------------------------
-    st.markdown('<div class="section">', unsafe_allow_html=True)
-
-    st.subheader("2. Select Up to Four Local Herbs")
-
-    st.caption(
-        "Choose up to four herbs. Each option includes the Nigerian "
-        "local name, English name and scientific botanical name."
-    )
-
-    herb_labels = {
-        herb: (
-            f"{herb} ({info['english']}) — "
-            f"{info['scientific']}"
+    with col1:
+        st.markdown(
+            """
+            <div class="card">
+            <h3>💊 Orthodox Medicines</h3>
+            Select multiple medicines at once and screen them
+            against the SmartRx Plus pharmaceutical knowledge base.
+            </div>
+            """,
+            unsafe_allow_html=True
         )
-        for herb, info in HERB_DATABASE.items()
-    }
 
-    display_options = ["None"] + sorted(herb_labels.values())
+    with col2:
+        st.markdown(
+            """
+            <div class="card">
+            <h3>🌿 Traditional Herbs</h3>
+            Select up to four local herbs using Nigerian,
+            English and scientific plant identification.
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    reverse_lookup = {
-        value: key
-        for key, value in herb_labels.items()
-    }
+    with col3:
+        st.markdown(
+            """
+            <div class="card">
+            <h3>🔍 Safety Screening</h3>
+            Cross-reference selected medicines and herbs
+            for potential safety concerns in the current
+            SmartRx Plus knowledge base.
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    herb1 = st.selectbox(
-        "🌿 Herb 1",
-        display_options,
-        key="herb1"
+    st.markdown(
+        """
+        <div style="
+        background:#FFF8DC;
+        padding:25px;
+        border-radius:20px;
+        border-left:8px solid #F9CC48;
+        box-shadow:0 8px 20px rgba(0,0,0,0.08);
+        margin-top:20px;
+        ">
+
+        <h3 style="color:#4338CA;">
+        💡 Why SmartRx Plus?
+        </h3>
+
+        <p style="color:#111111;">
+        Nigerians may use orthodox medicines alongside
+        traditional herbal preparations, yet information about
+        potential interactions can be difficult to access.
+        </p>
+
+        <p style="color:#111111;">
+        SmartRx Plus creates a digital bridge between
+        pharmaceutical information and Traditional African
+        Medicine through a structured ethnobotanical
+        reference layer.
+        </p>
+
+        <p style="color:#111111;">
+        The platform is designed to evolve toward AI-powered
+        natural-language medication-safety assistance.
+        </p>
+
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    herb2 = st.selectbox(
-        "🌿 Herb 2",
-        display_options,
-        key="herb2"
+    st.markdown(
+        f"""
+        <div class="card">
+
+        <h3>📊 Current Prototype</h3>
+
+        <p>
+        <strong>{len(DRUG_DATABASE)}</strong>
+        orthodox medicine entries
+        </p>
+
+        <p>
+        <strong>{len(HERB_DATABASE)}</strong>
+        traditional/local herb entries
+        </p>
+
+        <p>
+        Up to <strong>4 herbs</strong> can be screened against
+        multiple selected orthodox medicines.
+        </p>
+
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    herb3 = st.selectbox(
-        "🌿 Herb 3",
-        display_options,
-        key="herb3"
-    )
-
-    herb4 = st.selectbox(
-        "🌿 Herb 4",
-        display_options,
-        key="herb4"
-    )
-
-    selected_herbs = []
-
-    for item in [herb1, herb2, herb3, herb4]:
-
-        if item != "None":
-
-            actual_herb = reverse_lookup[item]
-
-            if actual_herb not in selected_herbs:
-                selected_herbs.append(actual_herb)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # ------------------------------------------------------
-    # VERIFICATION BUTTON
-    # ------------------------------------------------------
-    if st.button(
-        "🧠 RUN AI SAFETY VERIFICATION",
-        use_container_width=True
-    ):
-
-        if selected_drug == "-- Select Medicine --":
-
-            st.warning(
-                "Please select an orthodox medicine before running the screening."
-            )
-
-        elif len(selected_herbs) == 0:
-
-            st.warning(
-                "Please select at least one local herb before running the screening."
-            )
-
-        else:
-
-            st.markdown(
-                '<div class="section">',
-                unsafe_allow_html=True
-            )
-
-            st.subheader("🔍 Safety Screening Report")
-
-            drug_class = DRUG_DATABASE[selected_drug]
-
-            interaction_found = False
-
-            st.write(
-                f"**Orthodox Medicine:** {selected_drug}"
-            )
-
-            st.write(
-                f"**Medicine Category:** {drug_class}"
-            )
-
-            st.write(
-                f"**Herbs Screened:** {len(selected_herbs)}"
-            )
-
-            st.divider()
-
-            # --------------------------------------------------
-            # CHECK EACH SELECTED HERB
-            # --------------------------------------------------
-            for herb in selected_herbs:
-
-                info = HERB_DATABASE[herb]
-
-                if drug_class in info["classes"]:
-
-                    interaction_found = True
-
-                    st.error(
-                        "🚨 SCREENING FLAG — POTENTIAL HERB–DRUG CONCERN"
-                    )
-
-                    st.write(
-                        f"**Local Nigerian Name:** {herb}"
-                    )
-
-                    st.write(
-                        f"**English Name:** {info['english']}"
-                    )
-
-                    st.write(
-                        f"**Scientific Name:** "
-                        f"*{info['scientific']}*"
-                    )
-
-                    st.write(
-                        f"**Yoruba:** {info['yoruba']}"
-                    )
-
-                    st.write(
-                        f"**Hausa:** {info['hausa']}"
-                    )
-
-                    st.write(
-                        f"**Igbo:** {info['igbo']}"
-                    )
-
-                    st.warning(
-                        f"**Safety Note:** {info['risk']}"
-                    )
-
-                    st.divider()
-
-                else:
-
-                    st.info(
-                        f"🌿 **{herb} ({info['english']})** — "
-                        f"*{info['scientific']}*"
-                    )
-
-                    st.write(
-                        "No specific interaction flag was triggered "
-                        "for this medicine–herb pair within the current "
-                        "SmartRx Plus knowledge base."
-                    )
-
-                    st.divider()
-
-            # --------------------------------------------------
-            # FINAL RESULT
-            # --------------------------------------------------
-            if interaction_found:
-
-                st.error(
-                    "⚠️ One or more potential safety concerns were "
-                    "identified. Do not combine medicines and herbal "
-                    "preparations based solely on this screening result. "
-                    "Consult a qualified healthcare professional."
-                )
-
-            else:
-
-                st.success(
-                    "✅ NO SPECIFIC INTERACTION FLAG TRIGGERED"
-                )
-
-                st.write(
-                    "No specific high-risk interaction flag was triggered "
-                    "for the selected combination within the current "
-                    "SmartRx Plus knowledge base."
-                )
-
-            st.markdown(
-                "</div>",
-                unsafe_allow_html=True
-            )
 
 # ==========================================================
-# HOW TO USE
+# ABOUT PAGE
 # ==========================================================
-elif page == "📖 How to Use":
-
-    st.title("📖 How to Use SmartRx Plus")
-
-    st.markdown(
-        '<div class="section">',
-        unsafe_allow_html=True
-    )
-
-    st.subheader("Step 1 — Select Your Orthodox Medicine")
-
-    st.write(
-        "Choose **one orthodox medicine** from the pharmaceutical "
-        "dropdown. The current version screens one selected medicine "
-        "against up to four local herbs."
-    )
-
-    st.markdown(
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section">',
-        unsafe_allow_html=True
-    )
-
-    st.subheader("Step 2 — Select Your Local Herbs")
-
-    st.write(
-        "Choose up to **four Nigerian medicinal herbs** using the "
-        "four herb selection boxes."
-    )
-
-    st.write(
-        "Each herb is displayed using its **local Nigerian name, "
-        "English common name and scientific botanical name** so that "
-        "both Nigerian and international users can identify the plant."
-    )
-
-    st.markdown(
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section">',
-        unsafe_allow_html=True
-    )
-
-    st.subheader("Step 3 — Run the Safety Verification")
-
-    st.write(
-        "After selecting your medicine and herbs, click "
-        "**RUN AI SAFETY VERIFICATION**."
-    )
-
-    st.markdown(
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section">',
-        unsafe_allow_html=True
-    )
-
-    st.subheader("Step 4 — Understand Your Results")
-
-    st.write(
-        "A red warning indicates that the current knowledge base "
-        "has triggered a potential safety screening flag."
-    )
-
-    st.write(
-        "A green result means that no specific interaction flag "
-        "was triggered for the selected combination in the current "
-        "knowledge base."
-    )
-
-    st.markdown(
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section">',
-        unsafe_allow_html=True
-    )
-
-    st.subheader("⚠️ Important Safety Notice")
-
-    st.write(
-        "SmartRx Plus is an educational medication-safety and "
-        "decision-support screening tool. A 'clear' result does "
-        "not prove that a combination is completely safe. Herbal "
-        "products can vary in species, preparation, concentration "
-        "and composition. Always consult a qualified doctor or "
-        "pharmacist before combining medicines with herbal products."
-    )
-
-    st.markdown(
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-# ==========================================================
-# ABOUT
-# ==========================================================
-else:
+elif page == "ℹ️ About":
 
     st.title("ℹ️ About SmartRx Plus")
 
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -744,7 +598,7 @@ else:
         The platform is designed to address an important medication-
         safety challenge: the concurrent use of orthodox medicines
         and traditional herbal preparations without adequate
-        information about possible interactions.
+        information about potential interactions.
 
         SmartRx Plus creates a digital bridge between pharmaceutical
         medicine information and Traditional African Medicine (TAM),
@@ -756,11 +610,8 @@ else:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # THE PROBLEM
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -782,11 +633,8 @@ else:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # THE SOLUTION
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -795,36 +643,24 @@ else:
     st.write(
         """
         SmartRx Plus provides a user-friendly safety-screening
-        interface that allows a user to select an orthodox medicine
-        and up to four local herbal preparations.
+        interface that allows users to select multiple orthodox
+        medicines and up to four local herbal preparations.
 
-        The platform cross-references the selected combination against
-        its structured pharmaceutical and ethnobotanical knowledge base
-        and presents the result in an understandable format.
+        The platform cross-references selected combinations against
+        its structured pharmaceutical and ethnobotanical knowledge
+        base and presents potential safety concerns in an
+        understandable format.
 
-        Each plant can be identified through its:
-
-        • Nigerian/local name
-
-        • English common name
-
-        • Scientific botanical name
-
-        • Yoruba name
-
-        • Hausa name
-
-        • Igbo name
+        Each plant can be identified through its local Nigerian name,
+        English common name, scientific botanical name, Yoruba name,
+        Hausa name and Igbo name.
         """
     )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # AI INNOVATION
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -839,15 +675,14 @@ else:
         pharmaceutical and ethnobotanical knowledge with
         AI-powered natural-language understanding and retrieval.
 
-        This will enable users to ask medication-safety questions
-        in a more natural and accessible way while the structured
-        SmartRx Plus knowledge base provides the underlying safety
-        information.
+        This future AI layer can help users ask medication-safety
+        questions naturally while the structured SmartRx Plus
+        knowledge base provides the underlying safety information.
 
-        The platform is being developed with the goal of making
-        advanced AI technology useful for a distinctly Nigerian
-        healthcare information challenge while creating an
-        architecture that can scale to other African markets.
+        The long-term vision is to apply advanced AI technology to
+        a distinctly Nigerian healthcare information challenge
+        while creating an architecture that can scale across
+        African healthcare markets.
         """
     )
 
@@ -859,11 +694,8 @@ else:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # WHY NIGERIA
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -874,14 +706,14 @@ else:
         A major feature of SmartRx Plus is its use of local
         ethnobotanical identification.
 
-        A plant may have completely different common names across
-        communities and countries. By connecting Nigerian local
-        names with English names and scientific botanical names,
-        SmartRx Plus creates a common identification layer that can
-        make traditional medicine information more understandable
-        to both Nigerian and international users.
+        A plant may have different common names across communities
+        and countries. By connecting Nigerian local names with
+        English names and scientific botanical names, SmartRx Plus
+        creates a common identification layer that can make
+        traditional medicine information more understandable to
+        both Nigerian and international users.
 
-        The same approach can support future expansion into other
+        This approach can support future expansion into other
         African countries and multilingual health-information
         environments.
         """
@@ -889,11 +721,8 @@ else:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # CURRENT PROTOTYPE
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -908,11 +737,15 @@ else:
     )
 
     st.write(
-        "• Four-herb selection and comparison capability"
+        "• Multiple orthodox medicine selection"
     )
 
     st.write(
-        "• Nigerian local-name, English and scientific plant identification"
+        "• Up to four local herb selections"
+    )
+
+    st.write(
+        "• Local, English and scientific plant identification"
     )
 
     st.write(
@@ -929,11 +762,8 @@ else:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # STARTUP VISION
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -942,29 +772,26 @@ else:
     st.write(
         """
         The vision for SmartRx Plus is to grow beyond a basic
-        medication checker into an intelligent African medication-
-        safety information platform.
+        medication checker into an intelligent African
+        medication-safety information platform.
 
         Future development can include natural-language AI
         assistance, expanded medicine and ethnobotanical databases,
-        multilingual interaction, evidence-linked safety information,
-        pharmacist and healthcare-provider tools, and expansion into
-        additional African healthcare markets.
+        multilingual interaction, evidence-linked safety
+        information, pharmacist and healthcare-provider tools,
+        and expansion into additional African healthcare markets.
 
         The goal is simple:
 
-        **Use AI to make medication-safety information more accessible,
-        understandable and relevant to African users.**
+        **Use AI to make medication-safety information more
+        accessible, understandable and relevant to African users.**
         """
     )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # DEVELOPER / COMPANY
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -980,21 +807,10 @@ else:
         """
     )
 
-    st.write(
-        """
-        SmartRx Plus is being developed as an early-stage innovation
-        with the ambition of demonstrating how AI can be applied to
-        solve practical, locally relevant problems in Nigeria.
-        """
-    )
-
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # INTELLECTUAL PROPERTY
-    # ------------------------------------------------------
     st.markdown(
-        '<div class="section">',
+        '<div class="card">',
         unsafe_allow_html=True
     )
 
@@ -1016,9 +832,6 @@ else:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ------------------------------------------------------
-    # SAFETY DISCLAIMER
-    # ------------------------------------------------------
     st.warning(
         "⚠️ SmartRx Plus is a digital health information and "
         "clinical decision-support screening prototype. It does "
@@ -1027,3 +840,486 @@ else:
         "qualified healthcare professional before combining "
         "medicines with herbal preparations."
     )
+
+
+# ==========================================================
+# HOW TO USE PAGE
+# ==========================================================
+elif page == "📘 How To Use":
+
+    st.title("📘 How To Use SmartRx Plus")
+
+    st.markdown(
+        """
+        <div class="hero">
+
+        <h1 style="color:white;">How to Use SmartRx Plus</h1>
+
+        <p>
+        Follow these simple steps to screen your selected
+        orthodox medicines and traditional herbal preparations.
+        </p>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div class="card">
+        <h3>Step 1 — Select Your Medicines 💊</h3>
+        <p>
+        Go to <strong>Verify Your Medicines</strong> and use the
+        medicine selector to choose <strong>as many orthodox
+        medicines as you need</strong>.
+        </p>
+        <p>
+        You can select multiple medicines from the same selection
+        box. There is no artificial five-medicine limit.
+        </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div class="card">
+        <h3>Step 2 — Select Your Local Herbs 🌿</h3>
+        <p>
+        Select up to <strong>four local herbs</strong>.
+        </p>
+        <p>
+        Each dropdown displays the Nigerian/local name,
+        English name and scientific botanical name to help
+        users identify the correct plant.
+        </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div class="card">
+        <h3>Step 3 — Run the Safety Verification 🔍</h3>
+        <p>
+        Click <strong>RUN SAFETY VERIFICATION</strong>.
+        SmartRx Plus checks each selected orthodox medicine
+        against each selected herb in the current knowledge base.
+        </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div class="card">
+        <h3>Step 4 — Review the Results 📋</h3>
+        <p>
+        If a potential interaction is found, the report displays
+        the medicine, drug class, local herb name, English name,
+        scientific name and available Nigerian language names.
+        </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div class="card">
+        <h3>Step 5 — Understand the Safety Status ⚠️</h3>
+
+        <p>
+        <strong>Red:</strong> A potential high-risk combination
+        was flagged by the current SmartRx Plus knowledge base.
+        </p>
+
+        <p>
+        <strong>Yellow:</strong> Additional caution or evidence
+        review may be required.
+        </p>
+
+        <p>
+        <strong>Green:</strong> No matching high-risk interaction
+        was identified in the current knowledge base.
+        </p>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.warning(
+        "Important: A result showing no flagged interaction does "
+        "not prove that a combination is universally safe. Always "
+        "consult a qualified pharmacist or doctor before making "
+        "medication decisions."
+    )
+
+
+# ==========================================================
+# VERIFY YOUR MEDICINES PAGE
+# ==========================================================
+elif page == "🔍 Verify Your Medicines":
+
+    st.title("🔍 Verify Your Medicines")
+
+    st.write(
+        "Select multiple orthodox medicines and up to four "
+        "local herbs to screen the combination."
+    )
+
+    # ======================================================
+    # ORTHODOX MEDICINES
+    # ======================================================
+    st.markdown(
+        '<div class="card">',
+        unsafe_allow_html=True
+    )
+
+    st.subheader("💊 1. Select Orthodox Medicines")
+
+    st.caption(
+        "You can select as many medicines as needed from the "
+        "database. Click the box and choose multiple medicines."
+    )
+
+    selected_drugs = st.multiselect(
+        "Orthodox Medicines",
+        options=sorted(DRUG_DATABASE.keys()),
+        placeholder="Search and select multiple medicines..."
+    )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # ======================================================
+    # LOCAL HERBS
+    # ======================================================
+    st.markdown(
+        '<div class="card">',
+        unsafe_allow_html=True
+    )
+
+    st.subheader("🌿 2. Select Up to Four Local Herbs")
+
+    st.caption(
+        "Each herb is displayed with its local Nigerian name, "
+        "English name and scientific botanical name."
+    )
+
+    herb_options = ["None"] + sorted(
+        [
+            herb_display_label(herb)
+            for herb in HERB_DATABASE
+        ]
+    )
+
+    reverse_herb_lookup = {
+        herb_display_label(herb): herb
+        for herb in HERB_DATABASE
+    }
+
+    herb1 = st.selectbox(
+        "Herb 1",
+        herb_options,
+        key="herb1"
+    )
+
+    herb2 = st.selectbox(
+        "Herb 2",
+        herb_options,
+        key="herb2"
+    )
+
+    herb3 = st.selectbox(
+        "Herb 3",
+        herb_options,
+        key="herb3"
+    )
+
+    herb4 = st.selectbox(
+        "Herb 4",
+        herb_options,
+        key="herb4"
+    )
+
+    selected_herbs = []
+
+    for selected_label in [herb1, herb2, herb3, herb4]:
+
+        if selected_label != "None":
+
+            herb_name = reverse_herb_lookup[selected_label]
+
+            if herb_name not in selected_herbs:
+                selected_herbs.append(herb_name)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # ======================================================
+    # RUN VERIFICATION
+    # ======================================================
+    if st.button(
+        "🔍 RUN SAFETY VERIFICATION",
+        use_container_width=True
+    ):
+
+        if not selected_drugs:
+
+            st.warning(
+                "Please select at least one orthodox medicine."
+            )
+
+        elif not selected_herbs:
+
+            st.warning(
+                "Please select at least one local herb."
+            )
+
+        else:
+
+            # ==================================================
+            # SELECTED MEDICINES SUMMARY
+            # ==================================================
+            st.markdown(
+                '<div class="card">',
+                unsafe_allow_html=True
+            )
+
+            st.subheader("📋 Selected Medicines")
+
+            for drug in selected_drugs:
+
+                st.write(
+                    f"• **{drug}** — "
+                    f"{DRUG_DATABASE[drug]}"
+                )
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            # ==================================================
+            # SELECTED HERBS SUMMARY
+            # ==================================================
+            st.markdown(
+                '<div class="card">',
+                unsafe_allow_html=True
+            )
+
+            st.subheader("🌿 Selected Herbs")
+
+            for herb in selected_herbs:
+
+                info = HERB_DATABASE[herb]
+
+                st.write(
+                    f"• **{herb}** — "
+                    f"{info['english']} — "
+                    f"*{info['scientific']}*"
+                )
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            # ==================================================
+            # SCREENING ENGINE
+            # ==================================================
+            st.subheader("🔬 Safety Screening Results")
+
+            interaction_found = False
+            class_review_found = False
+
+            # --------------------------------------------------
+            # LEVEL 1: ORTHODOX-TO-ORTHODOX CLASS REVIEW
+            # --------------------------------------------------
+            selected_classes = [
+                DRUG_DATABASE[drug]
+                for drug in selected_drugs
+            ]
+
+            class_counts = {}
+
+            for drug_class in selected_classes:
+
+                class_counts[drug_class] = (
+                    class_counts.get(drug_class, 0) + 1
+                )
+
+            repeated_classes = {
+                drug_class: count
+                for drug_class, count in class_counts.items()
+                if count > 1
+            }
+
+            if repeated_classes:
+
+                class_review_found = True
+
+                st.markdown(
+                    """
+                    <div class="warning">
+                    <h3>⚠️ Same Drug Class Detected</h3>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                for drug_class, count in repeated_classes.items():
+
+                    matching_drugs = [
+                        drug
+                        for drug in selected_drugs
+                        if DRUG_DATABASE[drug] == drug_class
+                    ]
+
+                    st.write(
+                        f"**{drug_class}:** "
+                        f"{', '.join(matching_drugs)}"
+                    )
+
+                    st.write(
+                        "Multiple medicines from the same therapeutic "
+                        "class were selected. This does not by itself "
+                        "prove duplication, but the combination should "
+                        "be reviewed carefully."
+                    )
+
+            # --------------------------------------------------
+            # LEVEL 2: ORTHODOX → HERB SCREENING
+            # --------------------------------------------------
+            for drug in selected_drugs:
+
+                drug_class = DRUG_DATABASE[drug]
+
+                for herb in selected_herbs:
+
+                    info = HERB_DATABASE[herb]
+
+                    if drug_class in info["classes"]:
+
+                        interaction_found = True
+
+                        st.markdown(
+                            """
+                            <div class="danger">
+                            <h3>
+                            🚨 Potential Herb–Drug Interaction Flag
+                            </h3>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+                        st.write(
+                            f"**Orthodox Medicine:** {drug}"
+                        )
+
+                        st.write(
+                            f"**Drug Class:** {drug_class}"
+                        )
+
+                        st.write(
+                            f"**Local Name:** {herb}"
+                        )
+
+                        st.write(
+                            f"**English Name:** "
+                            f"{info['english']}"
+                        )
+
+                        st.write(
+                            f"**Scientific Name:** "
+                            f"*{info['scientific']}*"
+                        )
+
+                        st.write(
+                            f"**Yoruba:** {info['yoruba']}"
+                        )
+
+                        st.write(
+                            f"**Hausa:** {info['hausa']}"
+                        )
+
+                        st.write(
+                            f"**Igbo:** {info['igbo']}"
+                        )
+
+                        st.write(
+                            f"**Risk / Evidence Note:** "
+                            f"{info['risk']}"
+                        )
+
+                        st.divider()
+
+            # --------------------------------------------------
+            # NO DIRECT INTERACTION FOUND
+            # --------------------------------------------------
+            if not interaction_found:
+
+                st.markdown(
+                    """
+                    <div class="safe">
+                    <h3>✅ No Potential Interaction Flagged</h3>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                st.write(
+                    "No matching high-risk herb–drug combination "
+                    "was identified within the current SmartRx Plus "
+                    "knowledge base."
+                )
+
+                if class_review_found:
+
+                    st.write(
+                        "However, the selected medicines contain "
+                        "repeated therapeutic classes. Review those "
+                        "medicines carefully with a pharmacist or doctor."
+                    )
+
+            # --------------------------------------------------
+            # GENERAL SAFETY GUIDANCE
+            # --------------------------------------------------
+            st.subheader("💡 Safety Guidance")
+
+            st.write(
+                "• Do not combine medicines simply because they "
+                "have different brand names."
+            )
+
+            st.write(
+                "• Check active ingredients and therapeutic classes "
+                "before taking multiple medicines."
+            )
+
+            st.write(
+                "• Tell your pharmacist or doctor about herbal "
+                "preparations you are using."
+            )
+
+            st.write(
+                "• Avoid assuming that a natural product is "
+                "automatically safe."
+            )
+
+            st.write(
+                "• Seek professional advice when the composition "
+                "or dose of a traditional preparation is unknown."
+            )
+
+            st.info(
+                "⚠️ Disclaimer: SmartRx Plus provides educational "
+                "information and structured safety screening. "
+                "A flagged or unflagged result is not a diagnosis "
+                "or a substitute for professional medical advice."
+            )
+
+
+# ==========================================================
+# COPYRIGHT FOOTER
+# ==========================================================
+render_footer()
