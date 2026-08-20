@@ -204,7 +204,7 @@ for item in [herb1, herb2, herb3, herb4]:
         if selected_drug == "-- Select Medicine --":
             st.warning("Please select an orthodox medicine.")
 
-               elif len(selected_herbs) == 0:
+        elif len(selected_herbs) == 0:
             st.warning("Please select at least one herb.")
 
         else:
